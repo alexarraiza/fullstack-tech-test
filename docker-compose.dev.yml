@@ -18,3 +18,29 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+    environment:
+      - MONGODB_USER=root
+      - MONGODB_PWD=root
+      - MONGODB_URI=mongodb://db:27017/techtest-db
+    networks:
+      - backend_network
+
+  db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - db_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=techtest-db
+    networks:
+      - backend_network
+
+networks:
+  backend_network:
+    driver: bridge
+
+volumes:
+  db_data:
