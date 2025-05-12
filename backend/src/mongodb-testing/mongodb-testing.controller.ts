@@ -1,14 +1,11 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Connection, Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { Test } from './schemas/test.schema';
 
 @Controller('mongodb-testing')
 export class MongodbTestingController {
-  constructor(
-    @InjectModel(Test.name) private testModel: Model<Test>,
-    @InjectConnection() private readonly connection: Connection,
-  ) {}
+  constructor(@InjectModel(Test.name) private testModel: Model<Test>) {}
 
   @Post()
   async postTestData(@Body() testData: { name: string }): Promise<Test> {

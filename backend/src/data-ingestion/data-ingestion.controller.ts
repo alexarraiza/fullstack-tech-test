@@ -1,4 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { DataIngestionService } from './data-ingestion.service';
 
 @Controller('data-ingestion')
-export class DataIngestionController {}
+export class DataIngestionController {
+  constructor(private readonly service: DataIngestionService) {}
+
+  @Get()
+  async getData() {
+    return await this.service.getData();
+  }
+}
