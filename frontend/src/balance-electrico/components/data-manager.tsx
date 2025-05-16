@@ -23,7 +23,7 @@ export const DataManager = () => {
     endDate: undefined,
   });
 
-  const { loading, error, data, refetch } = useQuery<BalanceElectricoResponse>(
+  const { loading, data, refetch } = useQuery<BalanceElectricoResponse>(
     GET_ALL_DATA_QUERY,
     {
       variables: { ...filter },
