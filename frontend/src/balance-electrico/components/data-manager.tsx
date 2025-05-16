@@ -43,7 +43,8 @@ export const DataManager = () => {
   );
 
   useEffect(() => {
-    if (!loading && data?.balances.length === 0) {
+    if (!loading && (!data || data?.balances.length === 0)) {
+      notification.destroy();
       notification["info"]({
         message: "No se han encontrado resultados",
         description:
@@ -51,6 +52,8 @@ export const DataManager = () => {
         placement: "bottomLeft",
         duration: 0,
       });
+    } else if (!loading && data && data?.balances.length > 0) {
+      notification.destroy();
     }
   }, [loading, data]);
 
