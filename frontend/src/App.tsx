@@ -1,35 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Layout } from "antd";
+import { Content, Footer, Header } from "antd/es/layout/layout";
+import { DataManager } from "./balance-electrico/components/data-manager";
+import { RefreshDataButton } from "./balance-electrico/components/refresh-data-button";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Layout
+      style={{ height: "100dvh", width: "100vw", display: "flex", flex: 1 }}
+    >
+      <Header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <div
+          style={{
+            color: "white",
+
+            fontSize: 24,
+            fontWeight: "bold",
+            marginRight: 16,
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          Balance Eléctrico
+        </div>
+        <div>
+          <RefreshDataButton />
+        </div>
+      </Header>
+      <Content style={{ padding: "0 48px", flex: 1, display: "flex" }}>
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+            margin: 24,
+          }}
+        >
+          <DataManager />
+        </div>
+      </Content>
+      <Footer style={{ textAlign: "center" }}>
+        Alejandro Arraiza - {new Date().getFullYear()}
+      </Footer>
+    </Layout>
+  );
 }
 
-export default App
+export default App;

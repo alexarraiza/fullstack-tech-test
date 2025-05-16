@@ -36,9 +36,6 @@ export class BalanceElectricoApi {
       )
     ).data;
   }
-  // getDataMonthByMonth(
-  //   criteria: BalanceElectricoCriteria,
-  // ): Promise<BalanceElectricoApi> {}
 }
 
 export interface BalanceElectricoCriteria {

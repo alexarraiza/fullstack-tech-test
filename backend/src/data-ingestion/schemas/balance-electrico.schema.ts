@@ -4,6 +4,7 @@ import { Document } from 'mongoose';
 export interface IBalanceElectrico {
   date: Date;
   type: string;
+  group: string;
   value: number;
 }
 
@@ -18,6 +19,9 @@ export class BalanceElectricoModel extends Document {
   @Prop({ type: String, required: true })
   type: string;
 
+  @Prop({ type: String, required: true })
+  group: string;
+
   @Prop()
   value: number;
 }
@@ -26,4 +30,4 @@ export const BalanceElectricoSchema = SchemaFactory.createForClass(
   BalanceElectricoModel,
 );
 
-BalanceElectricoSchema.index({ date: 1, type: 1 }, { unique: true });
+BalanceElectricoSchema.index({ date: 1, type: 1, group: 1 }, { unique: true });
