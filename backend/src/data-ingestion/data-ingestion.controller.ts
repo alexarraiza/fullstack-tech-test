@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  InternalServerErrorException,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, InternalServerErrorException, Query } from '@nestjs/common';
 import { DataIngestionService } from './data-ingestion.service';
 import { IngestionResponseDto } from './dto/ingestion-response.dto';
 
@@ -17,11 +12,7 @@ export class DataIngestionController {
     @Query('endDate') endDate: string,
     @Query('replace') replace?: boolean,
   ): Promise<IngestionResponseDto> {
-    const result = await this.service.getDataManually(
-      startDate,
-      endDate,
-      replace,
-    );
+    const result = await this.service.getDataManually(startDate, endDate, replace);
 
     if (!result.success) {
       throw new InternalServerErrorException(result);

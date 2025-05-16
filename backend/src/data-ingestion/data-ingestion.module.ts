@@ -1,18 +1,11 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { BalanceElectricoModel, BalanceElectricoSchema } from '../models/db-models/balance-electrico.schema';
+import { DataIngestionLogModel, DataIngestionLogSchema } from '../models/db-models/data-ingestion-log.schema';
 import { DataIngestionController } from './data-ingestion.controller';
 import { DataIngestionService } from './data-ingestion.service';
 import { BalanceElectricoApi } from './repositories/balance-electrico.api';
-import { BalanceElectricoDb } from './repositories/balance-electrico.db';
-import {
-  BalanceElectricoModel,
-  BalanceElectricoSchema,
-} from './schemas/balance-electrico.schema';
-import {
-  DataIngestionLogModel,
-  DataIngestionLogSchema,
-} from './schemas/data-ingestion-log.schema';
 
 @Module({
   imports: [
@@ -23,6 +16,6 @@ import {
     ]),
   ],
   controllers: [DataIngestionController],
-  providers: [DataIngestionService, BalanceElectricoApi, BalanceElectricoDb],
+  providers: [DataIngestionService, BalanceElectricoApi],
 })
 export class DataIngestionModule {}

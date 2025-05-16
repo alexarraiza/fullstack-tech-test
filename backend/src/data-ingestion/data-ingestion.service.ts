@@ -4,23 +4,21 @@ import { Cron } from '@nestjs/schedule';
 import * as dateFns from 'date-fns';
 import { Model } from 'mongoose';
 import { tryCatch } from 'src/shared/tryCatch';
+import { BalanceElectricoModel } from '../models/db-models/balance-electrico.schema';
+import { DataIngestionLogModel, DataIngestionLogType } from '../models/db-models/data-ingestion-log.schema';
 import { IngestionResponseDto } from './dto/ingestion-response.dto';
 import { BalanceElectricoApi } from './repositories/balance-electrico.api';
-import { BalanceElectricoDb } from './repositories/balance-electrico.db';
-import { IBalanceElectrico } from './schemas/balance-electrico.schema';
-import {
-  DataIngestionLogModel,
-  DataIngestionLogType,
-} from './schemas/data-ingestion-log.schema';
 
 @Injectable()
 export class DataIngestionService implements OnModuleInit {
   constructor(
     private readonly balanceElectricoApi: BalanceElectricoApi,
-    private readonly balanceElectricoDb: BalanceElectricoDb,
 
     @InjectModel(DataIngestionLogModel.name)
     private dataIngLog: Model<DataIngestionLogModel>,
+
+    @InjectModel(BalanceElectricoModel.name)
+    private balanceModel: Model<BalanceElectricoModel>,
   ) {}
 
   async onModuleInit() {
@@ -79,11 +77,7 @@ export class DataIngestionService implements OnModuleInit {
     await this.dataIngLog.create(newSyncLog);
   }
 
-  async getDataManually(
-    startDate: string,
-    endDate: string,
-    replace?: boolean,
-  ): Promise<IngestionResponseDto> {
+  async getDataManually(startDate: string, endDate: string, replace?: boolean): Promise<IngestionResponseDto> {
     const newSyncResult = await this.getDataByDates(
       dateFns.format(startDate, 'yyyy-MM-dd'),
       dateFns.format(endDate, 'yyyy-MM-dd'),
@@ -102,11 +96,7 @@ export class DataIngestionService implements OnModuleInit {
     return newSyncResult;
   }
 
-  private async getDataByDates(
-    startDate: string,
-    endDate: string,
-    replace: boolean,
-  ): Promise<IngestionResponseDto> {
+  private async getDataByDates(startDate: string, endDate: string, replace: boolean): Promise<IngestionResponseDto> {
     const startDateParam = dateFns.startOfDay(Date.parse(startDate));
     const endDateParam = dateFns.endOfDay(Date.parse(endDate));
 
@@ -125,27 +115,24 @@ export class DataIngestionService implements OnModuleInit {
       };
     }
 
-    const balanceElectricoParsedData: IBalanceElectrico[] =
-      apiData.included.flatMap((data) =>
-        data.attributes.content.flatMap((balance) =>
-          balance.attributes.values.map((val) => ({
-            type: balance.type,
-            group: balance.groupId,
-            date: new Date(val.datetime),
-            value: val.value,
-          })),
-        ),
-      );
+    const balanceElectricoParsedData = apiData.included.flatMap((data) =>
+      data.attributes.content.flatMap((balance) =>
+        balance.attributes.values.map((val) => ({
+          type: balance.type,
+          group: balance.groupId,
+          date: new Date(val.datetime),
+          value: val.value,
+        })),
+      ),
+    );
 
     if (replace) {
-      const minDate = new Date(
-        Math.min(...balanceElectricoParsedData.map((d) => d.date.getTime())),
-      );
-      const maxDate = new Date(
-        Math.max(...balanceElectricoParsedData.map((d) => d.date.getTime())),
-      );
+      const minDate = new Date(Math.min(...balanceElectricoParsedData.map((d) => d.date.getTime())));
+      const maxDate = new Date(Math.max(...balanceElectricoParsedData.map((d) => d.date.getTime())));
       const { error: dbError } = await tryCatch(
-        this.balanceElectricoDb.BalanceElectricoBetweenDates(minDate, maxDate),
+        this.balanceModel.deleteMany({
+          date: { $gte: minDate, $lte: maxDate },
+        }),
       );
       if (dbError) {
         return {
@@ -157,9 +144,9 @@ export class DataIngestionService implements OnModuleInit {
     }
 
     const { data: dbData, error: dbError } = await tryCatch(
-      this.balanceElectricoDb.persistBalanceElectricoBulk(
-        balanceElectricoParsedData,
-      ),
+      this.balanceModel.create(balanceElectricoParsedData, {
+        aggregateErrors: true,
+      }),
     );
 
     if (dbError) {

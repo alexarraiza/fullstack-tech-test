@@ -1,6 +1,6 @@
 import { Query, Resolver } from '@nestjs/graphql';
+import { BalanceElectricoMeta } from '../models/graphql-models/balance-electrico-meta.model';
 import { DataConsumptionService } from './data-consumption.service';
-import { BalanceElectricoMeta } from './models/balance-electrico-meta.model';
 
 @Resolver(() => BalanceElectricoMeta)
 export class BalanceElectricoMetaResolver {

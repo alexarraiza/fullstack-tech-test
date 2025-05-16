@@ -1,7 +1,7 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
+import { BalanceElectrico } from '../models/graphql-models/balance-electrico.model';
 import { DataConsumptionService } from './data-consumption.service';
 import { GetBalancesArgs } from './inputs/get-balances.args';
-import { BalanceElectrico } from './models/balance-electrico.model';
 
 @Resolver(() => BalanceElectrico)
 export class BalanceElectricoResolver {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BalanceElectricoModel } from 'src/data-ingestion/schemas/balance-electrico.schema';
+import { BalanceElectricoModel } from 'src/models/db-models/balance-electrico.schema';
 import { tryCatch } from 'src/shared/tryCatch';
 
 @Injectable()
@@ -46,9 +46,7 @@ export class DataConsumptionService {
   }
 
   async findAllGroups() {
-    const { data, error } = await tryCatch(
-      this.balanceModel.find().distinct('group'),
-    );
+    const { data, error } = await tryCatch(this.balanceModel.find().distinct('group'));
 
     if (error) {
       throw error;
@@ -64,9 +62,7 @@ export class DataConsumptionService {
       mongooseFilter.group = group;
     }
 
-    const { data, error } = await tryCatch(
-      this.balanceModel.find(mongooseFilter).distinct('type'),
-    );
+    const { data, error } = await tryCatch(this.balanceModel.find(mongooseFilter).distinct('type'));
 
     if (error) {
       throw error;
@@ -76,15 +72,9 @@ export class DataConsumptionService {
   }
 
   async getMeta() {
-    const { data: count, error: countError } = await tryCatch(
-      this.balanceModel.countDocuments(),
-    );
-    const { data: maxDate, error: maxDateError } = await tryCatch(
-      this.balanceModel.findOne().sort({ date: -1 }),
-    );
-    const { data: minDate, error: minDateError } = await tryCatch(
-      this.balanceModel.findOne().sort({ date: 1 }),
-    );
+    const { data: count, error: countError } = await tryCatch(this.balanceModel.countDocuments());
+    const { data: maxDate, error: maxDateError } = await tryCatch(this.balanceModel.findOne().sort({ date: -1 }));
+    const { data: minDate, error: minDateError } = await tryCatch(this.balanceModel.findOne().sort({ date: 1 }));
 
     if (countError || maxDateError || minDateError) {
       throw countError || maxDateError || minDateError;

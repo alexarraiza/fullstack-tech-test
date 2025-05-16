@@ -2,36 +2,29 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import * as dateFns from 'date-fns';
 import { lastValueFrom } from 'rxjs';
+import { ReeBalanceElectricoResponseDto } from '../dto/ree-balance-electrico-response.dto';
 
 @Injectable()
 export class BalanceElectricoApi {
   constructor(private readonly http: HttpService) {}
 
-  async getDataDayByDay(
-    criteria: BalanceElectricoCriteria,
-  ): Promise<BalanceElectricoDto> {
+  async getDataDayByDay(criteria: BalanceElectricoCriteria): Promise<ReeBalanceElectricoResponseDto> {
     return (
       await lastValueFrom(
-        this.http.get<BalanceElectricoDto>(
-          'https://apidatos.ree.es/es/datos/balance/balance-electrico',
-          {
-            params: {
-              start_date: `${dateFns.format(
-                criteria.startDate,
-                'yyyy-MM-dd',
-              )}T${dateFns.format(criteria.startDate, 'HH:mm')}`,
-              end_date: `${dateFns.format(
-                criteria.endDate,
-                'yyyy-MM-dd',
-              )}T${dateFns.format(criteria.endDate, 'HH:mm')}`,
-              time_trunc: 'day',
-            },
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
+        this.http.get<ReeBalanceElectricoResponseDto>('https://apidatos.ree.es/es/datos/balance/balance-electrico', {
+          params: {
+            start_date: `${dateFns.format(
+              criteria.startDate,
+              'yyyy-MM-dd',
+            )}T${dateFns.format(criteria.startDate, 'HH:mm')}`,
+            end_date: `${dateFns.format(criteria.endDate, 'yyyy-MM-dd')}T${dateFns.format(criteria.endDate, 'HH:mm')}`,
+            time_trunc: 'day',
           },
-        ),
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        }),
       )
     ).data;
   }
@@ -40,54 +33,4 @@ export class BalanceElectricoApi {
 export interface BalanceElectricoCriteria {
   startDate: Date;
   endDate: Date;
-}
-
-export interface BalanceElectricoDto {
-  data: {
-    type: string;
-    id: string;
-    attributes: {
-      title: string;
-      'last-update': string;
-      description: string;
-    };
-    meta: {
-      'cache-control': {
-        cache: string;
-        expireAt: string;
-      };
-    };
-  };
-  included: Array<{
-    type: string;
-    id: string;
-    attributes: {
-      title: string;
-      'last-update': string;
-      description?: string;
-      magnitude: any;
-      content: Array<{
-        type: string;
-        id: string;
-        groupId: string;
-        attributes: {
-          title: string;
-          description?: string;
-          color: string;
-          icon: any;
-          type?: string;
-          magnitude: any;
-          composite: boolean;
-          'last-update': string;
-          values: Array<{
-            value: number;
-            percentage: number;
-            datetime: string;
-          }>;
-          total: number;
-          'total-percentage': number;
-        };
-      }>;
-    };
-  }>;
 }

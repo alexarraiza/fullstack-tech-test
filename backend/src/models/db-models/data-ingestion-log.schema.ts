@@ -31,6 +31,4 @@ export class DataIngestionLogModel extends Document {
   message: string;
 }
 
-export const DataIngestionLogSchema = SchemaFactory.createForClass(
-  DataIngestionLogModel,
-);
+export const DataIngestionLogSchema = SchemaFactory.createForClass(DataIngestionLogModel);
