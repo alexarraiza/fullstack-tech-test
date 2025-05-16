@@ -27,7 +27,7 @@ export const Graph = ({ data }: GraphProps) => {
   return (
     <div
       style={{
-        height: "calc(100vh - 350px)",
+        height: "calc(100vh - 400px)",
         width: "100%",
       }}
     >

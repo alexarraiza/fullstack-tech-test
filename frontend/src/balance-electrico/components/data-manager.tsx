@@ -48,7 +48,7 @@ export const DataManager = () => {
       notification["info"]({
         message: "No se han encontrado resultados",
         description:
-          "Parece que no se han encontrado datos, puedes probar a sincronizar los datos del API o cambiar los filtros.",
+          "Parece que no se han encontrado datos, puedes probar a actualizar, cambiar los filtros o sincronizar los datos del API.",
         placement: "bottomLeft",
         duration: 0,
       });
