@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import * as dateFns from 'date-fns';
 import { tryCatch } from 'src/shared/tryCatch';
+import { IngestionResponseDto } from './dto/ingestion-response.dto';
 import { BalanceElectricoApi } from './repositories/balance-electrico.api';
 import { BalanceElectricoDb } from './repositories/balance-electrico.db';
 import { IBalanceElectrico } from './schemas/balance-electrico.schema';
@@ -15,23 +16,32 @@ export class DataIngestionService {
 
   @Cron('0 3 * * *')
   async getData() {
-    await this.getDataByDates();
+    await this.getDataByDates(undefined, undefined, true);
   }
-  async getDataByDates(startDate?: string) {
+  async getDataByDates(
+    startDate?: string,
+    endDate?: string,
+    replace?: boolean,
+  ): Promise<IngestionResponseDto> {
     const startDateParam = startDate
       ? dateFns.startOfDay(Date.parse(startDate))
       : dateFns.startOfYesterday();
+    const endDateParam = endDate
+      ? dateFns.endOfDay(Date.parse(endDate))
+      : dateFns.endOfYesterday();
 
     const { data: apiData, error: apiError } = await tryCatch(
       this.balanceElectricoApi.getDataDayByDay({
         startDate: startDateParam,
-        endDate: dateFns.endOfYesterday(),
+        endDate: endDateParam,
       }),
     );
 
     if (apiError) {
       return {
-        apiError,
+        success: false,
+        message: 'Error fetching data from API',
+        error: apiError.toString(),
       };
     }
 
@@ -47,6 +57,25 @@ export class DataIngestionService {
         ),
       );
 
+    if (replace) {
+      const minDate = new Date(
+        Math.min(...balanceElectricoParsedData.map((d) => d.date.getTime())),
+      );
+      const maxDate = new Date(
+        Math.max(...balanceElectricoParsedData.map((d) => d.date.getTime())),
+      );
+      const { error: dbError } = await tryCatch(
+        this.balanceElectricoDb.BalanceElectricoBetweenDates(minDate, maxDate),
+      );
+      if (dbError) {
+        return {
+          success: false,
+          message: 'Error deleting data',
+          error: dbError.toString(),
+        };
+      }
+    }
+
     const { data: dbData, error: dbError } = await tryCatch(
       this.balanceElectricoDb.persistBalanceElectricoBulk(
         balanceElectricoParsedData,
@@ -55,13 +84,23 @@ export class DataIngestionService {
 
     if (dbError) {
       return {
-        dbError,
+        success: false,
+        message: 'Error persisting data',
+        error: dbError.toString(),
+      };
+    }
+
+    if (JSON.stringify(dbData).includes('error')) {
+      return {
+        success: false,
+        message: 'Error persisting data',
+        dbData,
       };
     }
 
     return {
-      apiData,
-      dbData,
+      success: true,
+      message: 'Data ingested successfully',
     };
   }
 }

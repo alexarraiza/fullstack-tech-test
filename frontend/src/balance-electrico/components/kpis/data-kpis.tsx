@@ -5,6 +5,10 @@ export type DataKpisProps = {
   count: number;
   minDate?: Date;
   maxDate?: Date;
+  countLabel?: string;
+  minDateLabel?: string;
+  maxDateLabel?: string;
+  valueColor?: string;
 };
 
 export const DataKpis = ({
@@ -12,24 +16,35 @@ export const DataKpis = ({
   count,
   minDate,
   maxDate,
+  countLabel = "Registros totales",
+  minDateLabel = "Fecha más antigua",
+  maxDateLabel = "Fecha más reciente",
+  valueColor = "black",
 }: DataKpisProps) => {
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "row", gap: 16 }}>
       <Card variant="borderless" style={{ flex: 1 }}>
-        <Statistic loading={loading} title="Registros totales" value={count} />
-      </Card>
-      <Card variant="borderless" style={{ flex: 1 }}>
         <Statistic
           loading={loading}
-          title="Fecha más antigua"
-          value={minDate ? new Date(minDate).toLocaleDateString() : undefined}
+          title={countLabel}
+          value={count}
+          valueStyle={{ color: valueColor }}
         />
       </Card>
       <Card variant="borderless" style={{ flex: 1 }}>
         <Statistic
           loading={loading}
-          title="Fecha más reciente"
+          title={minDateLabel}
+          value={minDate ? new Date(minDate).toLocaleDateString() : undefined}
+          valueStyle={{ color: valueColor }}
+        />
+      </Card>
+      <Card variant="borderless" style={{ flex: 1 }}>
+        <Statistic
+          loading={loading}
+          title={maxDateLabel}
           value={maxDate ? new Date(maxDate).toLocaleDateString() : undefined}
+          valueStyle={{ color: valueColor }}
         />
       </Card>
     </div>

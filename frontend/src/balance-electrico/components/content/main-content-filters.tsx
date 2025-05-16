@@ -28,7 +28,7 @@ export const MainContentFilters = ({
         }))}
         allowClear
         loading={groups.loading}
-        placeholder="Group"
+        placeholder="Grupo"
         style={{ width: 150, marginRight: 16 }}
         onSelect={(value) => {
           setFilter({
@@ -52,7 +52,7 @@ export const MainContentFilters = ({
         }))}
         loading={types.loading}
         allowClear
-        placeholder="Type"
+        placeholder="Tipo"
         style={{ width: 150, marginRight: 16 }}
         onSelect={(value) => {
           setFilter({
@@ -68,6 +68,7 @@ export const MainContentFilters = ({
       <RangePicker
         style={{ marginRight: 16 }}
         size="small"
+        placeholder={["Desde", "Hasta"]}
         value={[
           filter.startDate ? dayjs(filter.startDate) : undefined,
           filter.endDate ? dayjs(filter.endDate) : undefined,

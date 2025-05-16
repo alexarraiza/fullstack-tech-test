@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
-import { Card } from "antd";
-import { useState } from "react";
+import { Card, notification } from "antd";
+import { useEffect, useState } from "react";
 import {
   GET_ALL_DATA_QUERY,
   GET_ALL_GROUPS_QUERY,
@@ -42,10 +42,20 @@ export const DataManager = () => {
     }
   );
 
+  useEffect(() => {
+    if (!loading && data?.balances.length === 0) {
+      notification["info"]({
+        message: "No se han encontrado resultados",
+        description:
+          "Parece que no se han encontrado datos, puedes probar a sincronizar los datos del API o cambiar los filtros.",
+        placement: "bottomLeft",
+        duration: 0,
+      });
+    }
+  }, [loading, data]);
+
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-      {/* MARK: KPIS
-       */}
       <div
         style={{
           display: "flex",
@@ -58,6 +68,7 @@ export const DataManager = () => {
         <DataKpis
           loading={loading}
           count={data?.balances.length ?? 0}
+          countLabel="Registros visibles"
           minDate={
             data?.balances.length
               ? new Date(
@@ -67,20 +78,20 @@ export const DataManager = () => {
                 )
               : undefined
           }
+          minDateLabel="Fecha más antigua visible"
           maxDate={
             data?.balances.length
               ? new Date(
-                  Math.min(
+                  Math.max(
                     ...data.balances.map((b) => new Date(b.date).getTime())
                   )
                 )
               : undefined
           }
+          maxDateLabel="Fecha más reciente visible"
+          valueColor="blue"
         />
       </div>
-      {error && <Card style={{ marginTop: 12 }}>{error.toString()}</Card>}
-      {/* MARK: Filters
-       */}
       <Card
         style={{
           marginTop: 16,

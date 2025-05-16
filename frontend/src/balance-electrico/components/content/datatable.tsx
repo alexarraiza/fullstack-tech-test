@@ -17,18 +17,22 @@ export const Datatable = ({ data, loading, ...props }: DatatableProps) => {
       scroll={{ y: "calc(100% - 64px)" }}
       columns={[
         {
-          title: "Date",
+          title: "Fecha",
           dataIndex: "date",
           sorter: (a, b) => {
             return new Date(a.date).getTime() - new Date(b.date).getTime();
           },
         },
         {
-          title: "Type",
+          title: "Grupo",
+          dataIndex: "group",
+        },
+        {
+          title: "Tipo",
           dataIndex: "type",
         },
         {
-          title: "Value",
+          title: "Valor",
           dataIndex: "value",
         },
       ]}

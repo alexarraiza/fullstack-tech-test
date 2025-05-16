@@ -20,4 +20,9 @@ export class BalanceElectricoDb {
       aggregateErrors: true,
     });
   }
+  async BalanceElectricoBetweenDates(startDate: Date, endDate: Date) {
+    return await this.balanceModel.deleteMany({
+      date: { $gte: startDate, $lte: endDate },
+    });
+  }
 }
