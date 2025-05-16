@@ -6,9 +6,9 @@ import {
 import { DataKpis } from "./data-kpis";
 
 export const OverallDataKpis = () => {
-
-  const { data, loading } =
-    useQuery<BalanceElectricoMetaResponse>(GET_META_QUERY);
+  const { data, loading } = useQuery<BalanceElectricoMetaResponse>(
+    GET_META_QUERY,
+  );
 
   return (
     <DataKpis

@@ -1,34 +1,114 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { Cron } from '@nestjs/schedule';
 import * as dateFns from 'date-fns';
+import { Model } from 'mongoose';
 import { tryCatch } from 'src/shared/tryCatch';
 import { IngestionResponseDto } from './dto/ingestion-response.dto';
 import { BalanceElectricoApi } from './repositories/balance-electrico.api';
 import { BalanceElectricoDb } from './repositories/balance-electrico.db';
 import { IBalanceElectrico } from './schemas/balance-electrico.schema';
+import {
+  DataIngestionLogModel,
+  DataIngestionLogType,
+} from './schemas/data-ingestion-log.schema';
 
 @Injectable()
-export class DataIngestionService {
+export class DataIngestionService implements OnModuleInit {
   constructor(
     private readonly balanceElectricoApi: BalanceElectricoApi,
     private readonly balanceElectricoDb: BalanceElectricoDb,
+
+    @InjectModel(DataIngestionLogModel.name)
+    private dataIngLog: Model<DataIngestionLogModel>,
   ) {}
+
+  async onModuleInit() {
+    const lastSuccessfulSync = await this.dataIngLog.findOne({
+      success: true,
+    });
+
+    if (!lastSuccessfulSync) {
+      const startDate = dateFns.startOfMonth(new Date());
+      const endDate = dateFns.endOfDay(dateFns.endOfYesterday());
+
+      const newSyncResult = await this.getDataByDates(
+        dateFns.format(startDate, 'yyyy-MM-dd'),
+        dateFns.format(endDate, 'yyyy-MM-dd'),
+        true,
+      );
+
+      const newSyncLog = new this.dataIngLog({
+        startDate: startDate,
+        endDate: endDate,
+        type: DataIngestionLogType.ON_MODULE_INIT,
+        success: newSyncResult.success,
+        message: newSyncResult.message,
+      });
+      await this.dataIngLog.create(newSyncLog);
+    }
+  }
 
   @Cron('0 3 * * *')
   async getData() {
-    await this.getDataByDates(undefined, undefined, true);
+    const lastSuccessfulSync = await this.dataIngLog
+      .findOne({
+        success: true,
+        type: DataIngestionLogType.CRON,
+      })
+      .sort({ syncTimestamp: -1 });
+
+    const startDate = lastSuccessfulSync
+      ? dateFns.startOfDay(lastSuccessfulSync.endDate)
+      : dateFns.startOfMonth(new Date());
+    const endDate = dateFns.endOfDay(dateFns.endOfYesterday());
+
+    const newSyncResult = await this.getDataByDates(
+      dateFns.format(startDate, 'yyyy-MM-dd'),
+      dateFns.format(endDate, 'yyyy-MM-dd'),
+      true,
+    );
+
+    const newSyncLog = new this.dataIngLog({
+      startDate: startDate,
+      endDate: endDate,
+      type: DataIngestionLogType.CRON,
+      success: newSyncResult.success,
+      message: newSyncResult.message,
+    });
+    await this.dataIngLog.create(newSyncLog);
   }
-  async getDataByDates(
-    startDate?: string,
-    endDate?: string,
+
+  async getDataManually(
+    startDate: string,
+    endDate: string,
     replace?: boolean,
   ): Promise<IngestionResponseDto> {
-    const startDateParam = startDate
-      ? dateFns.startOfDay(Date.parse(startDate))
-      : dateFns.startOfYesterday();
-    const endDateParam = endDate
-      ? dateFns.endOfDay(Date.parse(endDate))
-      : dateFns.endOfYesterday();
+    const newSyncResult = await this.getDataByDates(
+      dateFns.format(startDate, 'yyyy-MM-dd'),
+      dateFns.format(endDate, 'yyyy-MM-dd'),
+      replace ?? false,
+    );
+
+    const newSyncLog = new this.dataIngLog({
+      startDate: startDate,
+      endDate: endDate,
+      type: DataIngestionLogType.MANUAL,
+      success: newSyncResult.success,
+      message: newSyncResult.message,
+    });
+    await this.dataIngLog.create(newSyncLog);
+
+    return newSyncResult;
+  }
+
+  private async getDataByDates(
+    startDate: string,
+    endDate: string,
+    replace: boolean,
+  ): Promise<IngestionResponseDto> {
+    const startDateParam = dateFns.startOfDay(Date.parse(startDate));
+    const endDateParam = dateFns.endOfDay(Date.parse(endDate));
 
     const { data: apiData, error: apiError } = await tryCatch(
       this.balanceElectricoApi.getDataDayByDay({

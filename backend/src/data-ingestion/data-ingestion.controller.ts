@@ -13,11 +13,11 @@ export class DataIngestionController {
 
   @Get()
   async getDataByDates(
-    @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
     @Query('replace') replace?: boolean,
   ): Promise<IngestionResponseDto> {
-    const result = await this.service.getDataByDates(
+    const result = await this.service.getDataManually(
       startDate,
       endDate,
       replace,

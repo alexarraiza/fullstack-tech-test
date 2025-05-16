@@ -10,7 +10,6 @@ export class BalanceElectricoApi {
   async getDataDayByDay(
     criteria: BalanceElectricoCriteria,
   ): Promise<BalanceElectricoDto> {
-    const endDate = criteria.endDate ?? dateFns.addDays(criteria.startDate, 1);
     return (
       await lastValueFrom(
         this.http.get<BalanceElectricoDto>(
@@ -22,9 +21,9 @@ export class BalanceElectricoApi {
                 'yyyy-MM-dd',
               )}T${dateFns.format(criteria.startDate, 'HH:mm')}`,
               end_date: `${dateFns.format(
-                endDate,
+                criteria.endDate,
                 'yyyy-MM-dd',
-              )}T${dateFns.format(endDate, 'HH:mm')}`,
+              )}T${dateFns.format(criteria.endDate, 'HH:mm')}`,
               time_trunc: 'day',
             },
             headers: {
@@ -40,7 +39,7 @@ export class BalanceElectricoApi {
 
 export interface BalanceElectricoCriteria {
   startDate: Date;
-  endDate?: Date;
+  endDate: Date;
 }
 
 export interface BalanceElectricoDto {

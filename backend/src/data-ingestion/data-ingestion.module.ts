@@ -9,12 +9,17 @@ import {
   BalanceElectricoModel,
   BalanceElectricoSchema,
 } from './schemas/balance-electrico.schema';
+import {
+  DataIngestionLogModel,
+  DataIngestionLogSchema,
+} from './schemas/data-ingestion-log.schema';
 
 @Module({
   imports: [
     HttpModule,
     MongooseModule.forFeature([
       { name: BalanceElectricoModel.name, schema: BalanceElectricoSchema },
+      { name: DataIngestionLogModel.name, schema: DataIngestionLogSchema },
     ]),
   ],
   controllers: [DataIngestionController],
