@@ -40,7 +40,7 @@ export const Graph = ({ data }: GraphProps) => {
         padding={0.3}
         colors={{ scheme: "nivo" }}
         enableLabel={false}
-        enableGridY={false}
+        enableGridY={true}
         enableGridX={false}
         enableTotals={false}
         axisLeft={{

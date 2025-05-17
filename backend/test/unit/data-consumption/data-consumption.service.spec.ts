@@ -1,7 +1,7 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DataConsumptionService } from '../../src/data-consumption/data-consumption.service';
-import { BalanceElectricoModel } from '../../src/models/db-models/balance-electrico.schema';
+import { DataConsumptionService } from '../../../src/data-consumption/data-consumption.service';
+import { BalanceElectricoModel } from '../../../src/models/db-models/balance-electrico.schema';
 
 const mockBalanceElectricoModel = {
   find: jest.fn(),

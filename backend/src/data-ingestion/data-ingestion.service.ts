@@ -28,7 +28,7 @@ export class DataIngestionService implements OnModuleInit {
 
     if (!lastSuccessfulSync) {
       const startDate = dateFns.startOfMonth(new Date());
-      const endDate = dateFns.endOfDay(dateFns.endOfYesterday());
+      const endDate = dateFns.endOfYesterday();
 
       const newSyncResult = await this.getDataByDates(
         dateFns.format(startDate, 'yyyy-MM-dd'),
@@ -36,19 +36,18 @@ export class DataIngestionService implements OnModuleInit {
         true,
       );
 
-      const newSyncLog = new this.dataIngLog({
+      await this.dataIngLog.create({
         startDate: startDate,
         endDate: endDate,
         type: DataIngestionLogType.ON_MODULE_INIT,
         success: newSyncResult.success,
         message: newSyncResult.message,
       });
-      await this.dataIngLog.create(newSyncLog);
     }
   }
 
   @Cron('0 3 * * *')
-  async getData() {
+  async getDataCron() {
     const lastSuccessfulSync = await this.dataIngLog
       .findOne({
         success: true,
@@ -59,7 +58,7 @@ export class DataIngestionService implements OnModuleInit {
     const startDate = lastSuccessfulSync
       ? dateFns.startOfDay(lastSuccessfulSync.endDate)
       : dateFns.startOfMonth(new Date());
-    const endDate = dateFns.endOfDay(dateFns.endOfYesterday());
+    const endDate = dateFns.endOfYesterday();
 
     const newSyncResult = await this.getDataByDates(
       dateFns.format(startDate, 'yyyy-MM-dd'),

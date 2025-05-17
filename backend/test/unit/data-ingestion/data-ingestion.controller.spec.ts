@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DataIngestionController } from '../../src/data-ingestion/data-ingestion.controller';
-import { DataIngestionService } from '../../src/data-ingestion/data-ingestion.service';
+import { DataIngestionController } from '../../../src/data-ingestion/data-ingestion.controller';
+import { DataIngestionService } from '../../../src/data-ingestion/data-ingestion.service';
 
 const mockDataIngestionService = {};
 
