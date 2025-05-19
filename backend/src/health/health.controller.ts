@@ -4,8 +4,8 @@ import { HealthCheck, HealthCheckService, MongooseHealthIndicator } from '@nestj
 @Controller('health')
 export class HealthController {
   constructor(
-    private health: HealthCheckService,
-    private mongooseIndicator: MongooseHealthIndicator,
+    private readonly health: HealthCheckService,
+    private readonly mongooseIndicator: MongooseHealthIndicator,
   ) {}
 
   @HealthCheck()

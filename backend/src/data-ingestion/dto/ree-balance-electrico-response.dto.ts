@@ -14,7 +14,7 @@ export interface ReeBalanceElectricoResponseDto {
       };
     };
   };
-  included: Array<{
+  included?: Array<{
     type: string;
     id: string;
     attributes: {

@@ -15,10 +15,10 @@ export class DataIngestionService implements OnModuleInit {
     private readonly balanceElectricoApi: BalanceElectricoApi,
 
     @InjectModel(DataIngestionLogModel.name)
-    private dataIngLog: Model<DataIngestionLogModel>,
+    private readonly dataIngLog: Model<DataIngestionLogModel>,
 
     @InjectModel(BalanceElectricoModel.name)
-    private balanceModel: Model<BalanceElectricoModel>,
+    private readonly balanceModel: Model<BalanceElectricoModel>,
   ) {}
 
   async onModuleInit() {
@@ -66,14 +66,13 @@ export class DataIngestionService implements OnModuleInit {
       true,
     );
 
-    const newSyncLog = new this.dataIngLog({
+    await this.dataIngLog.create({
       startDate: startDate,
       endDate: endDate,
       type: DataIngestionLogType.CRON,
       success: newSyncResult.success,
       message: newSyncResult.message,
     });
-    await this.dataIngLog.create(newSyncLog);
   }
 
   async getDataManually(startDate: string, endDate: string, replace?: boolean): Promise<IngestionResponseDto> {
@@ -83,14 +82,13 @@ export class DataIngestionService implements OnModuleInit {
       replace ?? false,
     );
 
-    const newSyncLog = new this.dataIngLog({
+    await this.dataIngLog.create({
       startDate: startDate,
       endDate: endDate,
       type: DataIngestionLogType.MANUAL,
       success: newSyncResult.success,
       message: newSyncResult.message,
     });
-    await this.dataIngLog.create(newSyncLog);
 
     return newSyncResult;
   }
@@ -111,6 +109,14 @@ export class DataIngestionService implements OnModuleInit {
         success: false,
         message: 'Error fetching data from API',
         error: apiError.toString(),
+      };
+    }
+
+    if (!apiData || !apiData.included || apiData.included.length === 0) {
+      return {
+        success: false,
+        message: 'No data found in API response',
+        error: 'No data found in API response',
       };
     }
 

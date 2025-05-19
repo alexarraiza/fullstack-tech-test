@@ -4,7 +4,7 @@ import { DataConsumptionService } from './data-consumption.service';
 
 @Resolver(() => BalanceElectricoMeta)
 export class BalanceElectricoMetaResolver {
-  constructor(private dataConsumptionService: DataConsumptionService) {}
+  constructor(private readonly dataConsumptionService: DataConsumptionService) {}
 
   @Query(() => [BalanceElectricoMeta], { name: 'meta' })
   async meta() {

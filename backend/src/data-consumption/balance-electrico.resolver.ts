@@ -5,7 +5,7 @@ import { GetBalancesArgs } from './inputs/get-balances.args';
 
 @Resolver(() => BalanceElectrico)
 export class BalanceElectricoResolver {
-  constructor(private dataConsumptionService: DataConsumptionService) {}
+  constructor(private readonly dataConsumptionService: DataConsumptionService) {}
 
   @Query(() => [BalanceElectrico], { name: 'balances' })
   async balancesElectricos(@Args() filter: GetBalancesArgs) {

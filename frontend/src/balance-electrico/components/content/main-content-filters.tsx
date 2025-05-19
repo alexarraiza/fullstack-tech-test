@@ -32,7 +32,7 @@ export const MainContentFilters = ({
         style={{ width: 150, marginRight: 16 }}
         onSelect={(value) => {
           setFilter({
-            group: value as string,
+            group: value,
             type: undefined,
           });
         }}
@@ -56,7 +56,7 @@ export const MainContentFilters = ({
         style={{ width: 150, marginRight: 16 }}
         onSelect={(value) => {
           setFilter({
-            type: value as string,
+            type: value,
           });
         }}
         onClear={() => {

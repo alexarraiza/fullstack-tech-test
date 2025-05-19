@@ -8,7 +8,7 @@ import { tryCatch } from 'src/shared/tryCatch';
 export class DataConsumptionService {
   constructor(
     @InjectModel(BalanceElectricoModel.name)
-    private balanceModel: Model<BalanceElectricoModel>,
+    private readonly balanceModel: Model<BalanceElectricoModel>,
   ) {}
 
   async findAll(filters: FilterCriteria) {

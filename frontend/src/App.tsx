@@ -2,8 +2,8 @@ import { Button, Layout, Modal } from "antd";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import { useState } from "react";
 import { DataManager } from "./balance-electrico/components/data-manager";
-import { RefreshDataButton } from "./balance-electrico/components/refresh-data-button";
-import { SyncDataForm } from "./balance-electrico/components/sync-data/sync-data.form";
+import { RefreshDataButton } from "./balance-electrico/components/data-sync/refresh-data-button";
+import { SyncDataForm } from "./balance-electrico/components/data-sync/sync-data.form";
 import { refetchQueries } from "./balance-electrico/queries/refetch-queries";
 
 function App() {

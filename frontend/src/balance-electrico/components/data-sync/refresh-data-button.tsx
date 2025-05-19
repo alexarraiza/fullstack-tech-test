@@ -1,6 +1,6 @@
 import { ReloadOutlined } from "@ant-design/icons";
 import { Button } from "antd";
-import { refetchQueries } from "../queries/refetch-queries";
+import { refetchQueries } from "../../queries/refetch-queries";
 
 export const RefreshDataButton = () => {
   return (
