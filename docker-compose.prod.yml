@@ -2,26 +2,20 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: dev.dockerfile
-    environment:
-      - VITE_BACKEND_URL=http://localhost:4000
+      dockerfile: dockerfile
+      args:
+        - VITE_BACKEND_URL=http://localhost:4000
     ports:
-      - 3000:5173
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - 80:80
 
   backend:
     build:
       context: ./backend
-      dockerfile: dev.dockerfile
+      dockerfile: dockerfile
     ports:
       - "4000:3000"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     environment:
-      - FRONTEND_URL=http://localhost:3000
+      - FRONTEND_URL=http://localhost
       - MONGODB_USER=root
       - MONGODB_PWD=root
       - MONGODB_URI=mongodb://db:27017/techtest-db

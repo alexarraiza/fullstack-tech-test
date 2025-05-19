@@ -112,7 +112,7 @@ export class DataIngestionService implements OnModuleInit {
       };
     }
 
-    if (!apiData || !apiData.included || apiData.included.length === 0) {
+    if (!apiData?.included || apiData.included.length === 0) {
       return {
         success: false,
         message: 'No data found in API response',

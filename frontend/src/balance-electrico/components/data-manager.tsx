@@ -1,5 +1,6 @@
+import { ReloadOutlined } from "@ant-design/icons";
 import { useQuery } from "@apollo/client";
-import { Card, notification } from "antd";
+import { Button, Card, notification } from "antd";
 import { useEffect, useState } from "react";
 import {
   GET_ALL_DATA_QUERY,
@@ -23,7 +24,7 @@ export const DataManager = () => {
     endDate: undefined,
   });
 
-  const { loading, data, refetch } = useQuery<BalanceElectricoResponse>(
+  const { loading, data, refetch, error } = useQuery<BalanceElectricoResponse>(
     GET_ALL_DATA_QUERY,
     {
       variables: { ...filter },
@@ -43,7 +44,32 @@ export const DataManager = () => {
   );
 
   useEffect(() => {
-    if (!loading && (!data || data?.balances.length === 0)) {
+    if (error) {
+      notification.destroy();
+      notification["error"]({
+        message: "Error al cargar los datos",
+        description: (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            Parece que ha habido un error al cargar los datos, revisa la
+            configuración de la aplicación o intentalo de nuevo más tarde.
+            <Button icon={<ReloadOutlined />} type="dashed" onClick={() => refetch()}>
+              Reintentar
+            </Button>
+          </div>
+        ),
+        placement: "bottomLeft",
+        duration: 0,
+      });
+    } else if (loading && (!data || data?.balances.length === 0)) {
+      notification.destroy();
+      notification["info"]({
+        message: "Cargando datos",
+        description: "Estamos cargando los datos, por favor espera...",
+        placement: "bottomLeft",
+        duration: 0,
+        showProgress: true,
+      });
+    } else if (!loading && (!data || data?.balances.length === 0)) {
       notification.destroy();
       notification["info"]({
         message: "No se han encontrado resultados",

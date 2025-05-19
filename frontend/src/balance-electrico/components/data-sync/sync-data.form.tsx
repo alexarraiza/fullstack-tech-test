@@ -24,7 +24,9 @@ export const SyncDataForm = ({ onDone }: SyncDataFormProps) => {
     setError(undefined);
     try {
       const response = await fetch(
-        `http://localhost:4000/data-ingestion?startDate=${startDate}&endDate=${endDate}&replace=true`,
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/data-ingestion?startDate=${startDate}&endDate=${endDate}&replace=true`,
         {
           method: "GET",
         }
