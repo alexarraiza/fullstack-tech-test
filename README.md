@@ -32,9 +32,9 @@ Esto incluye hot reload y permite trabajar en el mismo entorno que en producció
 ```mermaid
 sequenceDiagram
 Backend->>MongoDb: Fetch last successful sync
-Backend->>+REE API: GET 'datos/balance/balance-electrico' from last sync or 1 month ago
-Note over Backend, REE API: Every day at 3 am or at startup
-REE API->>-Backend: Data from last sync to end of yesterday
+Backend->>+REE API: GET 'datos/balance/balance-electrico'
+Note over Backend, REE API: At backend startup, every day at 3 am or manually
+REE API->>-Backend: Data from API
 Backend->>MongoDb: Transform data and persist
 ```
 
