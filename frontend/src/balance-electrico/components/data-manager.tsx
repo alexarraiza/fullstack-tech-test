@@ -52,7 +52,11 @@ export const DataManager = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             Parece que ha habido un error al cargar los datos, revisa la
             configuración de la aplicación o intentalo de nuevo más tarde.
-            <Button icon={<ReloadOutlined />} type="dashed" onClick={() => refetch()}>
+            <Button
+              icon={<ReloadOutlined />}
+              type="dashed"
+              onClick={() => refetch()}
+            >
               Reintentar
             </Button>
           </div>
@@ -81,7 +85,7 @@ export const DataManager = () => {
     } else if (!loading && data && data?.balances.length > 0) {
       notification.destroy();
     }
-  }, [loading, data]);
+  }, [loading, data, error, refetch]);
 
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>

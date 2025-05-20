@@ -2,6 +2,10 @@
 
 ![Demo](docs/demo.gif)
 
+> [!IMPORTANT]
+> Es posible que al iniciar la aplicacion aparezca un mensaje de error al obtener los datos, es debido a que se está iniciando el backend. Se soluciona en unos segundos y pulsando `Reintentar` en la notificacion o actualizando.
+
+
 ## Iniciar aplicacion en modo PROD
 
 Se puede usar directamente el archivo `docker-compose.prod.yml` que esta listo para funcionar. (Es recomendable cambiar las credenciales de acceso a MongoDB)
@@ -76,3 +80,107 @@ Y en el formulario que aparece, se escoge un rango de fechas y se pulsa en el bo
 ![Sync form](docs/sync-form.png)
 
 Esto sincronizará el sistema, obteniendo datos desde la API de REE, con las fechas escogidas y reemplazando los datos de la BBDD con los nuevos obtenidos.
+
+## Consultas GraphQL
+
+### Balance Electrico
+
+Se pueden hacer consultas en `[backend-url]/graphql`
+
+Query sin filtros
+```gql
+{
+  balances {
+    group,
+    type,
+    date,
+    value
+  }
+}
+```
+
+Respuesta
+```json
+{
+  "data": {
+    "balances": [
+      {
+        "group": "No-Renovable",
+        "type": "Carbón",
+        "date": "2025-02-28T23:00:00.000Z",
+        "value": 7107.447
+      },
+      {
+        "group": "Almacenamiento",
+        "type": "Carga batería",
+        "date": "2025-02-28T23:00:00.000Z",
+        "value": -1.291
+      },
+    ]
+  }
+}
+```
+
+>Se puede filtrar por `group`, `type` o `date`
+
+Query con filtros
+```gql
+{
+  balances(group:"No-Renovable") {
+    group,
+    type,
+    date,
+    value
+  }
+}
+```
+
+Respuesta
+```json
+{
+  "data": {
+    "balances": [
+      {
+        "group": "No-Renovable",
+        "type": "Carbón",
+        "date": "2025-02-28T23:00:00.000Z",
+        "value": 7107.447
+      },
+      {
+        "group": "No-Renovable",
+        "type": "Ciclo combinado",
+        "date": "2025-02-28T23:00:00.000Z",
+        "value": 52996.583
+      },
+    ]
+  }
+}
+```
+
+### Balance Electrico Meta
+> Obtiene el count total de registros del balance eléctrico, así como la fecha máxima y mínima.
+
+Query
+```gql
+{
+  meta {
+    count,
+    maxDate,
+    minDate
+  }
+}
+```
+Respuesta
+```json
+{
+  "data": {
+    "meta": [
+      {
+        "count": 1877,
+        "maxDate": "2025-05-19T22:00:00.000Z",
+        "minDate": "2025-02-28T23:00:00.000Z"
+      }
+    ]
+  }
+}
+```
