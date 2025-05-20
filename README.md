@@ -5,7 +5,6 @@
 > [!IMPORTANT]
 > Es posible que al iniciar la aplicacion aparezca un mensaje de error al obtener los datos, es debido a que se está iniciando el backend. Se soluciona en unos segundos y pulsando `Reintentar` en la notificacion o actualizando.
 
-
 ## Iniciar aplicacion en modo PROD
 
 Se puede usar directamente el archivo `docker-compose.prod.yml` que esta listo para funcionar. (Es recomendable cambiar las credenciales de acceso a MongoDB)
@@ -36,6 +35,28 @@ Backend->>+REE API: GET 'datos/balance/balance-electrico'
 Note over Backend, REE API: At backend startup, every day at 3 am or manually
 REE API->>-Backend: Data from API
 Backend->>MongoDb: Transform data and persist
+MongoDb->>Backend: Persistence results
+Backend->>MongoDb: Log sync
+```
+
+## Obtencion de datos para visualizar en frontend
+
+```mermaid
+sequenceDiagram
+Frontend->>+Backend: GraphQL Query "balances"
+Backend->>+MongoDb: find BalanceElectrico
+MongoDb->>-Backend: BalanceElectrico data
+Backend->>-Frontend: BalanceElectrico data
+```
+
+## Obtencion de datos para visualizar total de registros, fecha max y fecha min total
+
+```mermaid
+sequenceDiagram
+Frontend->>+Backend: GraphQL Query "meta"
+Backend->>+MongoDb: find BalanceElectrico count, maxDate, minDate
+MongoDb->>-Backend: BalanceElectricoMeta count, maxDate, minDate
+Backend->>-Frontend: BalanceElectricoMeta count, maxDate, minDate
 ```
 
 ## Modelo de datos
@@ -88,18 +109,20 @@ Esto sincronizará el sistema, obteniendo datos desde la API de REE, con las fec
 Se pueden hacer consultas en `[backend-url]/graphql`
 
 Query sin filtros
+
 ```gql
 {
   balances {
-    group,
-    type,
-    date,
+    group
+    type
+    date
     value
   }
 }
 ```
 
 Respuesta
+
 ```json
 {
   "data": {
@@ -115,27 +138,29 @@ Respuesta
         "type": "Carga batería",
         "date": "2025-02-28T23:00:00.000Z",
         "value": -1.291
-      },
+      }
     ]
   }
 }
 ```
 
->Se puede filtrar por `group`, `type` o `date`
+> Se puede filtrar por `group`, `type` o `date`
 
 Query con filtros
+
 ```gql
 {
-  balances(group:"No-Renovable") {
-    group,
-    type,
-    date,
+  balances(group: "No-Renovable") {
+    group
+    type
+    date
     value
   }
 }
 ```
 
 Respuesta
+
 ```json
 {
   "data": {
@@ -151,26 +176,30 @@ Respuesta
         "type": "Ciclo combinado",
         "date": "2025-02-28T23:00:00.000Z",
         "value": 52996.583
-      },
+      }
     ]
   }
 }
 ```
 
 ### Balance Electrico Meta
+
 > Obtiene el count total de registros del balance eléctrico, así como la fecha máxima y mínima.
 
 Query
+
 ```gql
 {
   meta {
-    count,
-    maxDate,
+    count
+    maxDate
     minDate
   }
 }
 ```
+
 Respuesta
+
 ```json
 {
   "data": {
